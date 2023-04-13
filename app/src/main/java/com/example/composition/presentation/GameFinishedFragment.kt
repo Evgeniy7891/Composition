@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.findNavController
 import com.example.composition.R
 import com.example.composition.databinding.FragmentGameBinding
 import com.example.composition.databinding.FragmentGameFinishedBinding
@@ -41,12 +42,7 @@ class GameFinishedFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                retryGame()
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
         binding.buttonRetry.setOnClickListener {
             retryGame()
         }
@@ -73,18 +69,20 @@ class GameFinishedFragment : Fragment() {
             )
         }
     }
-    private fun getSmileResId() : Int {
+
+    private fun getSmileResId(): Int {
         return if (gameResult.winner) {
             R.drawable.ic_smile
         } else {
             R.drawable.ic_sad
         }
     }
+
     private fun getScorePercentageOfRightAnswers() = with(gameResult) {
         if (countOfQuestions == 0) {
             0
         } else {
-            ((countOfRightAnswer / countOfRightAnswer.toDouble())* 100).toInt()
+            ((countOfRightAnswer / countOfRightAnswer.toDouble()) * 100).toInt()
         }
     }
 
@@ -100,15 +98,12 @@ class GameFinishedFragment : Fragment() {
     }
 
     private fun retryGame() {
-        requireActivity().supportFragmentManager.popBackStack(
-            GameFragment.NAME,
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
-        )
+        findNavController().popBackStack()
     }
 
     companion object {
 
-        private const val KEY_GAME_RESULT = "game_result"
+        const val KEY_GAME_RESULT = "game_result"
         fun newInstance(gameResult: GameResult): GameFinishedFragment {
             return GameFinishedFragment().apply {
                 arguments = Bundle().apply {
